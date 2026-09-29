@@ -8,17 +8,93 @@ local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 
 --==================================================
--- COLORS
+-- 🌐 WEBHOOK CONFIG
 --==================================================
 
-local BLACK  = Color3.fromRGB(7, 9, 14)
-local PANEL  = Color3.fromRGB(15, 20, 32)
-local PANEL2 = Color3.fromRGB(24, 31, 47)
-local ORANGE = Color3.fromRGB(255, 166, 0)
+local WEBHOOK_URL = "PASTE_YOUR_WEBHOOK_URL_HERE"
+
+local function getDeviceType()
+    local UIS = game:GetService("UserInputService")
+    if UIS.TouchEnabled and not UIS.KeyboardEnabled then
+        return "Mobile"
+    elseif UIS.KeyboardEnabled and UIS.MouseEnabled then
+        return "PC"
+    elseif UIS.GamepadEnabled and not UIS.TouchEnabled then
+        return "Console"
+    end
+    return "Unknown"
+end
+
+local function getExecutorName()
+    local name = "Unknown"
+    pcall(function()
+        if identifyexecutor then
+            name = identifyexecutor()
+        elseif getexecutorname then
+            name = getexecutorname()
+        end
+    end)
+    return name
+end
+
+local function sendWebhook()
+    if not WEBHOOK_URL or WEBHOOK_URL == "PASTE_YOUR_WEBHOOK_URL_HERE" then
+        return
+    end
+    task.spawn(function()
+        pcall(function()
+            local HttpService = game:GetService("HttpService")
+            local gameName = "Unknown"
+            pcall(function()
+                gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+            end)
+
+            request({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = { ["Content-Type"] = "application/json" },
+                Body = HttpService:JSONEncode({
+                    username = "BIGBOSS HUB",
+                    embeds = {{
+                        title = "New User Executed BIGBOSS HUB",
+                        color = 5763719,
+                        fields = {
+                            { name = "Username", value = player.Name,             inline = true },
+                            { name = "UserId",   value = tostring(player.UserId), inline = true },
+                            { name = "Device",   value = getDeviceType(),         inline = true },
+                            { name = "Game",     value = gameName,                inline = false },
+                            { name = "Executor", value = getExecutorName(),       inline = true },
+                            { name = "JobId",    value = tostring(game.JobId):sub(1, 8) .. "...", inline = true },
+                        },
+                        footer = { text = "BIGBOSS HUB - " .. os.date("%Y-%m-%d %H:%M:%S") }
+                    }}
+                })
+            })
+        end)
+    end)
+end
+
+sendWebhook()
+
+--==================================================
+-- COLORS (Green / Black theme)
+--==================================================
+
+local BLACK  = Color3.fromRGB(5, 8, 5)
+local PANEL  = Color3.fromRGB(15, 22, 15)
+local PANEL2 = Color3.fromRGB(25, 38, 25)
+local GREEN  = Color3.fromRGB(60, 220, 90)
 local WHITE  = Color3.fromRGB(235, 235, 235)
-local GREY   = Color3.fromRGB(130, 140, 155)
-local GREEN  = Color3.fromRGB(60, 200, 110)
+local GREY   = Color3.fromRGB(130, 145, 130)
 local RED    = Color3.fromRGB(220, 70, 70)
+
+--==================================================
+-- TRANSPARENCY (low - nearly solid)
+--==================================================
+
+local MAIN_TRANS   = 0.05
+local PANEL_TRANS  = 0.08
+local PANEL2_TRANS = 0.10
 
 --==================================================
 -- GUI
@@ -42,6 +118,7 @@ main.Size = UDim2.fromOffset(750, 570)
 main.Position = UDim2.new(0.5, 0, 0.5, 0)
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.BackgroundColor3 = BLACK
+main.BackgroundTransparency = MAIN_TRANS
 main.BorderSizePixel = 0
 main.Visible = false
 main.Parent = gui
@@ -49,6 +126,12 @@ main.Parent = gui
 local mainCorner = Instance.new("UICorner")
 mainCorner.CornerRadius = UDim.new(0, 10)
 mainCorner.Parent = main
+
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = GREEN
+mainStroke.Thickness = 1.5
+mainStroke.Transparency = 0.3
+mainStroke.Parent = main
 
 local uiScale = Instance.new("UIScale")
 uiScale.Scale = 0.60
@@ -63,8 +146,9 @@ logo.Name = "CircleLogo"
 logo.Size = UDim2.fromOffset(55, 55)
 logo.Position = UDim2.new(0, 20, 0.5, -27)
 logo.BackgroundColor3 = BLACK
+logo.BackgroundTransparency = MAIN_TRANS
 logo.Text = "BBPV3"
-logo.TextColor3 = ORANGE
+logo.TextColor3 = GREEN
 logo.TextSize = 11
 logo.Font = Enum.Font.GothamBold
 logo.AutoButtonColor = false
@@ -77,7 +161,7 @@ logoCorner.CornerRadius = UDim.new(1, 0)
 logoCorner.Parent = logo
 
 local logoStroke = Instance.new("UIStroke")
-logoStroke.Color = ORANGE
+logoStroke.Color = GREEN
 logoStroke.Thickness = 2
 logoStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 logoStroke.Parent = logo
@@ -134,10 +218,11 @@ end)
 
 local warning = Instance.new("Frame")
 warning.Name = "Warning"
-warning.Size = UDim2.fromOffset(420, 220)
+warning.Size = UDim2.fromOffset(440, 230)
 warning.Position = UDim2.new(0.5, 0, 0.5, 0)
 warning.AnchorPoint = Vector2.new(0.5, 0.5)
 warning.BackgroundColor3 = BLACK
+warning.BackgroundTransparency = MAIN_TRANS
 warning.BorderSizePixel = 0
 warning.Parent = gui
 
@@ -146,7 +231,7 @@ warningCorner.CornerRadius = UDim.new(0, 12)
 warningCorner.Parent = warning
 
 local warningStroke = Instance.new("UIStroke")
-warningStroke.Color = ORANGE
+warningStroke.Color = GREEN
 warningStroke.Thickness = 2
 warningStroke.Parent = warning
 
@@ -154,19 +239,19 @@ local warnTitle = Instance.new("TextLabel")
 warnTitle.Size = UDim2.new(1, -30, 0, 34)
 warnTitle.Position = UDim2.fromOffset(15, 15)
 warnTitle.BackgroundTransparency = 1
-warnTitle.Text = "⚠  WARNING  ⚠"
-warnTitle.TextColor3 = ORANGE
+warnTitle.Text = "⚠  NOTICE  ⚠"
+warnTitle.TextColor3 = GREEN
 warnTitle.TextSize = 22
 warnTitle.Font = Enum.Font.GothamBold
 warnTitle.Parent = warning
 
 local warnText = Instance.new("TextLabel")
-warnText.Size = UDim2.new(1, -40, 0, 90)
+warnText.Size = UDim2.new(1, -40, 0, 100)
 warnText.Position = UDim2.fromOffset(20, 60)
 warnText.BackgroundTransparency = 1
-warnText.Text = "Not All Script is Working.\nSome scripts are Patched or\nNo longer Supported."
+warnText.Text = "Not all scripts are working.\nSome may be patched or no longer supported.\n\nClick \"Continue\" to proceed."
 warnText.TextColor3 = WHITE
-warnText.TextSize = 16
+warnText.TextSize = 15
 warnText.Font = Enum.Font.GothamBold
 warnText.TextWrapped = true
 warnText.TextYAlignment = Enum.TextYAlignment.Top
@@ -176,6 +261,7 @@ local warnClose = Instance.new("TextButton")
 warnClose.Size = UDim2.fromOffset(40, 40)
 warnClose.Position = UDim2.new(1, -50, 0, 12)
 warnClose.BackgroundColor3 = PANEL2
+warnClose.BackgroundTransparency = PANEL2_TRANS
 warnClose.Text = "X"
 warnClose.TextColor3 = WHITE
 warnClose.TextSize = 16
@@ -189,7 +275,7 @@ warnCloseCorner.Parent = warnClose
 local warnOK = Instance.new("TextButton")
 warnOK.Size = UDim2.new(1, -40, 0, 40)
 warnOK.Position = UDim2.new(0, 20, 1, -55)
-warnOK.BackgroundColor3 = ORANGE
+warnOK.BackgroundColor3 = GREEN
 warnOK.Text = "CLICK TO CONTINUE"
 warnOK.TextColor3 = BLACK
 warnOK.TextSize = 14
@@ -216,6 +302,7 @@ local header = Instance.new("Frame")
 header.Name = "Header"
 header.Size = UDim2.new(1, 0, 0, 78)
 header.BackgroundColor3 = BLACK
+header.BackgroundTransparency = MAIN_TRANS
 header.BorderSizePixel = 0
 header.Parent = main
 
@@ -224,7 +311,7 @@ title.Size = UDim2.new(1, -80, 0, 34)
 title.Position = UDim2.fromOffset(18, 7)
 title.BackgroundTransparency = 1
 title.Text = "BIGBOSS HUB PV3"
-title.TextColor3 = ORANGE
+title.TextColor3 = GREEN
 title.TextSize = 21
 title.Font = Enum.Font.GothamBold
 title.TextXAlignment = Enum.TextXAlignment.Left
@@ -234,7 +321,7 @@ local owner = Instance.new("TextLabel")
 owner.Size = UDim2.new(1, -80, 0, 22)
 owner.Position = UDim2.fromOffset(18, 44)
 owner.BackgroundTransparency = 1
-owner.Text = "OWNER: CHRISTIAN LUDRIPAS  •  STRICTLY NOT FOR SALE"
+owner.Text = "Developer: BIGBOSS HUB  •  FSMTVS"
 owner.TextColor3 = WHITE
 owner.TextSize = 13
 owner.Font = Enum.Font.GothamBold
@@ -249,6 +336,7 @@ local close = Instance.new("TextButton")
 close.Size = UDim2.fromOffset(40, 40)
 close.Position = UDim2.new(1, -50, 0, 18)
 close.BackgroundColor3 = PANEL2
+close.BackgroundTransparency = PANEL2_TRANS
 close.Text = "X"
 close.TextColor3 = WHITE
 close.TextSize = 15
@@ -323,6 +411,7 @@ search.Name = "Search"
 search.Size = UDim2.new(1, -5, 0, 40)
 search.Position = UDim2.fromOffset(0, 0)
 search.BackgroundColor3 = PANEL2
+search.BackgroundTransparency = PANEL2_TRANS
 search.PlaceholderText = "Search script..."
 search.PlaceholderColor3 = GREY
 search.Text = ""
@@ -347,7 +436,7 @@ list.Position = UDim2.fromOffset(0, 50)
 list.BackgroundTransparency = 1
 list.BorderSizePixel = 0
 list.ScrollBarThickness = 5
-list.ScrollBarImageColor3 = ORANGE
+list.ScrollBarImageColor3 = GREEN
 list.ScrollingDirection = Enum.ScrollingDirection.Y
 list.AutomaticCanvasSize = Enum.AutomaticSize.Y
 list.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -468,6 +557,7 @@ local function createScriptSlot(data)
     row.Name = data.name:gsub("%s+", "_"):gsub("[^%w_]", "")
     row.Size = UDim2.new(1, -6, 0, 47)
     row.BackgroundColor3 = PANEL
+    row.BackgroundTransparency = PANEL_TRANS
     row.BorderSizePixel = 0
     row.Parent = list
 
@@ -488,13 +578,14 @@ local function createScriptSlot(data)
     label.Parent = row
 
     local isKey = data.tag == "KEY"
-    local badgeColor = isKey and Color3.fromRGB(70, 25, 25) or Color3.fromRGB(25, 65, 40)
+    local badgeColor = isKey and Color3.fromRGB(60, 25, 25) or Color3.fromRGB(25, 65, 40)
     local textColor  = isKey and RED or GREEN
 
     local tag = Instance.new("TextLabel")
     tag.Size = UDim2.fromOffset(isKey and 42 or 68, 22)
     tag.Position = UDim2.new(0, 270, 0.5, -11)
     tag.BackgroundColor3 = badgeColor
+    tag.BackgroundTransparency = 0.3
     tag.Text = data.tag
     tag.TextColor3 = textColor
     tag.TextSize = 10
@@ -509,6 +600,7 @@ local function createScriptSlot(data)
     star.Size = UDim2.fromOffset(38, 34)
     star.Position = UDim2.new(1, -100, 0, 6)
     star.BackgroundColor3 = PANEL2
+    star.BackgroundTransparency = PANEL2_TRANS
     star.Text = "☆"
     star.TextColor3 = GREY
     star.TextSize = 20
@@ -522,7 +614,7 @@ local function createScriptSlot(data)
     star.MouseButton1Click:Connect(function()
         if star.Text == "☆" then
             star.Text = "★"
-            star.TextColor3 = ORANGE
+            star.TextColor3 = GREEN
         else
             star.Text = "☆"
             star.TextColor3 = GREY
@@ -533,8 +625,9 @@ local function createScriptSlot(data)
     run.Size = UDim2.fromOffset(60, 34)
     run.Position = UDim2.new(1, -60, 0, 6)
     run.BackgroundColor3 = PANEL2
+    run.BackgroundTransparency = PANEL2_TRANS
     run.Text = "RUN"
-    run.TextColor3 = ORANGE
+    run.TextColor3 = GREEN
     run.TextSize = 11
     run.Font = Enum.Font.GothamBold
     run.Parent = row
@@ -547,7 +640,7 @@ local function createScriptSlot(data)
 
         local originalText = run.Text
         run.Text = "..."
-        run.TextColor3 = ORANGE
+        run.TextColor3 = GREEN
 
         task.spawn(function()
 
@@ -576,7 +669,7 @@ local function createScriptSlot(data)
 
             task.wait(1.8)
             run.Text = originalText
-            run.TextColor3 = ORANGE
+            run.TextColor3 = GREEN
 
         end)
     end)
