@@ -55,7 +55,7 @@ uiScale.Scale = 0.60
 uiScale.Parent = main
 
 --==================================================
--- FLOATING CIRCLE LOGO
+-- FLOATING CIRCLE LOGO (BBPV3)
 --==================================================
 
 local logo = Instance.new("TextButton")
@@ -63,7 +63,7 @@ logo.Name = "CircleLogo"
 logo.Size = UDim2.fromOffset(55, 55)
 logo.Position = UDim2.new(0, 20, 0.5, -27)
 logo.BackgroundColor3 = BLACK
-logo.Text = "BBHV3"
+logo.Text = "BBPV3"
 logo.TextColor3 = ORANGE
 logo.TextSize = 11
 logo.Font = Enum.Font.GothamBold
@@ -98,6 +98,18 @@ logo.InputBegan:Connect(function(input)
     end
 end)
 
+logo.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        logoDragging = false
+        if not logoMoved then
+            main.Visible = true
+            logo.Visible = false
+        end
+        logoMoved = false
+    end
+end)
+
 UserInputService.InputChanged:Connect(function(input)
     if not logoDragging then return end
     if input.UserInputType == Enum.UserInputType.MouseMovement
@@ -113,18 +125,6 @@ UserInputService.InputChanged:Connect(function(input)
                 logoStartPos.Y.Offset + delta.Y
             )
         end
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
-        logoDragging = false
-        if not logoMoved then
-            main.Visible = true
-            logo.Visible = false
-        end
-        logoMoved = false
     end
 end)
 
@@ -374,7 +374,6 @@ local scripts = {
     { name = "Miranda Hub V2 (Alt)",   tag = "KEYLESS", url = "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/stealaeggs" },
     { name = "Miranda Hub V3 (Kaitun)",tag = "KEYLESS", url = "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/mirandaafk.lua" },
     { name = "Miranda Hub V4 (Fixed)", tag = "KEYLESS", url = "https://api.luarmor.net/files/v4/loaders/7891557d7950ed56a7d1d8f57b66ad4d.lua" },
-    { name = "Miranda Hub (Unpatched)",tag = "KEYLESS", url = "https://raw.githubusercontent.com/miirandahub/loader/refs/heads/main/stealegg!!es" },
 
     -- ============ LENNON SERIES ============
     { name = "Lennon Hub V1",          tag = "KEYLESS", url = "https://raw.githubusercontent.com/chocolascript-glitch/LENNON-HUB-STEAL-AN-EGG/refs/heads/main/FREE-LEAKED" },
