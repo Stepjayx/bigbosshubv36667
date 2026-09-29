@@ -11,7 +11,7 @@ local player = Players.LocalPlayer
 -- 🌐 WEBHOOK CONFIG
 --==================================================
 
-local WEBHOOK_URL = "PASTE_YOUR_WEBHOOK_URL_HERE"
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1551894342891872258/YR6IITZK1l4sT5ZzeB8jgiMpqm6l7lUZfwsM9_rMdRjKk0AWZRtdDJx1Fo8rEEuqgoGU"
 
 local function getDeviceType()
     local UIS = game:GetService("UserInputService")
@@ -38,7 +38,7 @@ local function getExecutorName()
 end
 
 local function sendWebhook()
-    if not WEBHOOK_URL or WEBHOOK_URL == "PASTE_YOUR_WEBHOOK_URL_HERE" then
+    if not WEBHOOK_URL or WEBHOOK_URL == "https://discord.com/api/webhooks/1551894342891872258/YR6IITZK1l4sT5ZzeB8jgiMpqm6l7lUZfwsM9_rMdRjKk0AWZRtdDJx1Fo8rEEuqgoGU" then
         return
     end
     task.spawn(function()
@@ -77,7 +77,7 @@ end
 sendWebhook()
 
 --==================================================
--- COLORS (Green / Black theme)
+-- COLORS (Green / Black)
 --==================================================
 
 local BLACK  = Color3.fromRGB(5, 8, 5)
@@ -89,12 +89,12 @@ local GREY   = Color3.fromRGB(130, 145, 130)
 local RED    = Color3.fromRGB(220, 70, 70)
 
 --==================================================
--- TRANSPARENCY (low - nearly solid)
+-- TRANSPARENCY
 --==================================================
 
-local MAIN_TRANS   = 0.05
-local PANEL_TRANS  = 0.08
-local PANEL2_TRANS = 0.10
+local MAIN_TRANS   = 0.25   -- outer panel see-through (game visible)
+local PANEL_TRANS  = 0.10   -- rows nearly solid (clean text)
+local PANEL2_TRANS = 0.15   -- buttons/badges mostly solid
 
 --==================================================
 -- GUI
@@ -129,8 +129,8 @@ mainCorner.Parent = main
 
 local mainStroke = Instance.new("UIStroke")
 mainStroke.Color = GREEN
-mainStroke.Thickness = 1.5
-mainStroke.Transparency = 0.3
+mainStroke.Thickness = 2.5
+mainStroke.Transparency = 0.15
 mainStroke.Parent = main
 
 local uiScale = Instance.new("UIScale")
@@ -232,7 +232,8 @@ warningCorner.Parent = warning
 
 local warningStroke = Instance.new("UIStroke")
 warningStroke.Color = GREEN
-warningStroke.Thickness = 2
+warningStroke.Thickness = 2.5
+warningStroke.Transparency = 0.15
 warningStroke.Parent = warning
 
 local warnTitle = Instance.new("TextLabel")
@@ -302,7 +303,7 @@ local header = Instance.new("Frame")
 header.Name = "Header"
 header.Size = UDim2.new(1, 0, 0, 78)
 header.BackgroundColor3 = BLACK
-header.BackgroundTransparency = MAIN_TRANS
+header.BackgroundTransparency = 1
 header.BorderSizePixel = 0
 header.Parent = main
 
